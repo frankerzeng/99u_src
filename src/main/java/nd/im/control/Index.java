@@ -75,14 +75,16 @@ public class Index {
                 String retClean = imUc.mobileAction(name, "signOut_new");
 
                 // 送花
-                System.out.println("送花完成");
+                System.out.println("送花开始");
                 while (resultSetSendFlower.next()) {
                     String userId = resultSetSendFlower.getString(1);
                     imUc.sendFlower(userId);
+                    System.out.println("送花--->" + userId);
                 }
-                System.out.println("送花完成");
+                System.out.println("送完成");
 
                 // 生日列表
+                System.out.println("祝福开始");
                 Map<String, String> birthdayUsers = imUc.birthdayUsers();
 
                 for (String key : birthdayUsers.keySet()) {
@@ -91,7 +93,9 @@ public class Index {
                     System.out.println("祝福" + birthdayUsers.get(key));
                     //送花
                     imUc.sendFlower(key);
+                    System.out.println("送花--->" + key);
                 }
+                System.out.println("祝福完成");
 
                 // 领积分
                 System.out.println("自动化结束");
