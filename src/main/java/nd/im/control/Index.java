@@ -1,6 +1,7 @@
 package nd.im.control;
 
 import nd.im.im.ImUc;
+import nd.im.im.MobileIoa;
 import nd.im.im.MysqlConnect;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,6 +18,7 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -68,20 +70,16 @@ public class Index {
                 // 获取token
                 String ret = imUc.token(name, password);
 
-                // 签到
-                String retSign = imUc.mobileAction(name, "signIn");
-
-                // 日清
-                String retClean = imUc.mobileAction(name, "signOut_new");
-
                 // 送花
-                System.out.println("送花开始");
-                while (resultSetSendFlower.next()) {
-                    String userId = resultSetSendFlower.getString(1);
-                    imUc.sendFlower(userId);
-                    System.out.println("送花--->" + userId);
+                if ("741007".equals(name)) {
+                    System.out.println("送花开始");
+                    while (resultSetSendFlower.next()) {
+                        String userId = resultSetSendFlower.getString(1);
+                        imUc.sendFlower(userId);
+                        System.out.println("送花--->" + userId);
+                    }
+                    System.out.println("送完成");
                 }
-                System.out.println("送完成");
 
                 // 生日列表
                 System.out.println("祝福开始");
@@ -97,9 +95,27 @@ public class Index {
                 }
                 System.out.println("祝福完成");
 
-                // 领积分
-                System.out.println("自动化结束");
 
+                MobileIoa mobileIoa = new MobileIoa();
+
+                // 签到
+                String retSign = mobileIoa.mobileAction(name, "signIn", null);
+
+                // 日清
+                String retClean = mobileIoa.mobileAction(name, "signOut_new", null);
+
+                // 待领积分列表
+                Map<String, String> pointList = mobileIoa.mobileActionPoint(name, "getReceivePointList");
+                for (String k : pointList.keySet()) {
+                    if (Integer.parseInt(pointList.get(k)) == 0) {
+                        //领积分
+                        HashMap autoCode = new HashMap();
+                        autoCode.put("auto", k);
+                        mobileIoa.mobileAction(name, "receivePoint", autoCode);
+                        System.out.println("领积分" + k);
+                    }
+                }
+                System.out.println("自动化结束");
             }
 
         } catch (SQLException e) {
@@ -109,6 +125,8 @@ public class Index {
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
         } catch (InvalidKeyException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return "送花完成~~";

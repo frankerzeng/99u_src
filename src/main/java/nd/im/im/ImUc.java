@@ -3,7 +3,6 @@ package nd.im.im;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.util.Base64;
 import nd.im.util.HttpClient;
 import nd.im.util.HttpsClient;
 import nd.im.util.Map2Json;
@@ -33,31 +32,9 @@ public class ImUc {
     public static String mac_key = null;
     public static String mac_algorithm = null;
 
-    // 签到和日清
-    public String mobileAction(String userId, String action) {
-
-        String url = mobileUrl + action + "?userID=" + userId + "&sid=";
-
-        try {
-            Map<String, String> map = new HashMap<String, String>();
-            map.put("Content-Type", "application/json; charset=utf-8");
-            map.put("Nd-CompanyOrgId", "481036337156");
-            String resp = HttpClient.request(url, "", map, "GET");
-
-            if (resp == null) {
-                if (action.equals("signIn")) {
-                    throw new Exception("签到失败");
-                } else if (action.equals("signOut_new")) {
-                    throw new Exception("日事日清失败");
-                }
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return "";
-    }
+    public static Map<String, String> map = new HashMap<String, String>() {{
+        put("Content-Type", "application/json; charset=utf-8");
+    }};
 
     // 祝福
     public void bless(String userId) throws NoSuchAlgorithmException, InvalidKeyException, UnsupportedEncodingException {
@@ -71,13 +48,12 @@ public class ImUc {
             return;
         }
 
+        map.put("Authorization", authorization);
+
+
         String url = "http://" + host + api;
 
         try {
-            Map<String, String> map = new HashMap<String, String>();
-            map.put("Content-Type", "application/json; charset=utf-8");
-            map.put("Authorization", authorization);
-
             String resp = HttpClient.request(url, "", map, "POST");
 
             if (resp == null) {
@@ -99,6 +75,8 @@ public class ImUc {
             return;
         }
 
+        map.put("Authorization", authorization);
+
         String url = "http://" + host + api;
 
         Map<String, Object> paramMap = new HashMap<>();
@@ -109,10 +87,6 @@ public class ImUc {
         String requestParam = Map2Json.map2json(paramMap);
         System.out.println(requestParam);
         try {
-            Map<String, String> map = new HashMap<String, String>();
-            map.put("Content-Type", "application/json; charset=utf-8");
-            map.put("Authorization", authorization);
-
             String resp = HttpClient.request(url, requestParam, map, "POST");
 
             if (resp == null) {
@@ -126,15 +100,26 @@ public class ImUc {
     }
 
     // 获得token
-    public String token(String name, String password) throws UnsupportedEncodingException {
+    public String token(String name, String password) throws Exception {
 
         String api = version + "tokens";
 
         System.out.println(Charset.defaultCharset());
 
         System.out.println(password);
-//        password = encrypt_md5(password);
-        password = "a6184949124f01e61edee18f5bea2abf";
+
+        // // TODO: 2016/7/12 加密算法问题
+        //  password = encrypt_md5(password);
+        switch (name) {
+            case "741007":
+                password = "a6184949124f01e61edee18f5bea2abf";
+                break;
+            case "153962":
+                password = "c350a822df13a90869a05227a74a5418";
+                break;
+            default:
+                throw new Exception("用户密码未定义");
+        }
 
         String url = "https://" + host + api;
 
@@ -245,7 +230,7 @@ public class ImUc {
         return authorization;
     }
 
-    //
+    // 生日同学的列表
     public Map<String, String> birthdayUsers() throws NoSuchAlgorithmException, InvalidKeyException, UnsupportedEncodingException {
         Map<String, String> resultMap = new HashMap<>();
 
