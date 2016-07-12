@@ -100,7 +100,7 @@ public class ImUc {
     }
 
     // 获得token
-    public String token(String name, String password) throws Exception {
+    public void token(String name, String password) throws Exception {
 
         String api = version + "tokens";
 
@@ -150,8 +150,6 @@ public class ImUc {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        return password;
     }
 
     // 加密

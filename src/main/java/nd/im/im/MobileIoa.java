@@ -17,7 +17,7 @@ public class MobileIoa {
 
     // 签到和日清
     // 领积分
-    public String mobileAction(String userId, String action, HashMap param) {
+    public void mobileAction(String userId, String action, HashMap param) {
 
         String url = mobileUrl + action + "?userID=" + userId + "&sid=";
 
@@ -38,7 +38,6 @@ public class MobileIoa {
             e.printStackTrace();
         }
 
-        return "";
     }
 
     // 积分列表

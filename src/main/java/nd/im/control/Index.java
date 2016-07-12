@@ -29,7 +29,6 @@ import java.util.Map;
 @RequestMapping(value = "/99u")
 public class Index {
 
-
     static String sql = null;
     static MysqlConnect mysqlConnect = null;
     static MysqlConnect mysqlConnectSendFlower = null;
@@ -68,7 +67,7 @@ public class Index {
                 ImUc imUc = new ImUc();
 
                 // 获取token
-                String ret = imUc.token(name, password);
+                imUc.token(name, password);
 
                 // 送花
                 if ("741007".equals(name)) {
@@ -99,10 +98,10 @@ public class Index {
                 MobileIoa mobileIoa = new MobileIoa();
 
                 // 签到
-                String retSign = mobileIoa.mobileAction(name, "signIn", null);
+                mobileIoa.mobileAction(name, "signIn", null);
 
                 // 日清
-                String retClean = mobileIoa.mobileAction(name, "signOut_new", null);
+                mobileIoa.mobileAction(name, "signOut_new", null);
 
                 // 待领积分列表
                 Map<String, String> pointList = mobileIoa.mobileActionPoint(name, "getReceivePointList");
