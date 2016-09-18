@@ -6,12 +6,14 @@ import com.alibaba.fastjson.JSONObject;
 import nd.im.util.HttpClient;
 import nd.im.util.HttpsClient;
 import nd.im.util.Map2Json;
+import org.apache.commons.codec.binary.Hex;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.security.InvalidKeyException;
+import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 import java.util.HashMap;
@@ -109,17 +111,21 @@ public class ImUc {
         System.out.println(password);
 
         // // TODO: 2016/7/12 加密算法问题
-        //  password = encrypt_md5(password);
-        switch (name) {
-            case "741007":
-                password = "a6184949124f01e61edee18f5bea2abf";
-                break;
-            case "153962":
-                password = "c350a822df13a90869a05227a74a5418";
-                break;
-            default:
-                throw new Exception("用户密码未定义");
-        }
+//        password = encrypt_md5(password);
+        password = getMd5(password);
+        System.out.println(";;;;;;;;;;;");
+        System.out.println(password);
+
+//        switch (name) {
+//            case "741007":
+//                password = "a6184949124f01e61edee18f5bea2abf";
+//                break;
+//            case "153962":
+//                password = "c350a822df13a90869a05227a74a5418";
+//                break;
+//            default:
+//                throw new Exception("用户密码未定义");
+//        }
 
         String url = "https://" + host + api;
 
@@ -293,4 +299,39 @@ public class ImUc {
         return mimeEncoded;
     }
 
+    public static String getMd5(String password) {
+        String value = "";
+        byte[] data_key = "fdjf,jkgfkl".getBytes();
+        byte[] data_pwd = password.getBytes();
+        int size_key = data_key.length;
+        int size_pwd = data_pwd.length;
+
+        byte[] data = new byte[size_pwd + 4 + size_key];
+        byte[] data_fk = new byte[]{(byte) -93, (byte) -84, (byte) -95, (byte) -93};
+        System.arraycopy(data_pwd, 0, data, 0, size_pwd);
+        System.arraycopy(data_fk, 0, data, size_pwd, data_fk.length);
+        System.arraycopy(data_key, 0, data, size_pwd + data_fk.length, size_key);
+
+        MessageDigest md;
+        try {
+            md = MessageDigest.getInstance("MD5");
+            byte[] buff = md.digest(data);
+            value = Md5toHexString(buff);
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+
+        return value;
+    }
+
+    final static char[] HEX = "0123456789abcdef".toCharArray();
+
+    private static String Md5toHexString(byte[] b) {
+        StringBuilder sb = new StringBuilder(b.length * 2);
+        for (int i = 0; i < b.length; i++) {
+            sb.append(HEX[(b[i] & 0xF0) >>> 4]);
+            sb.append(HEX[b[i] & 0x0F]);
+        }
+        return sb.toString();
+    }
 }

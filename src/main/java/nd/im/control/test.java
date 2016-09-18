@@ -20,9 +20,24 @@ public class Test {
         getDate();
     }
 
+    {
+        System.out.println("chushihua");
+    }
+
+    Test() {
+        System.out.println("chushihua static");
+    }
+
     private static String getDefaultCharSet() {
         OutputStreamWriter writer = new OutputStreamWriter(new ByteArrayOutputStream());
         String enc = writer.getEncoding();
+
+        String n[] = {"sd","sdsd"};
+        String[] dn = {"dsfs", "s"};
+
+        System.out.println("Default Charset in Use="+n[0]);
+        System.out.println("Default Charset in Use="+dn[0]);
+
 
         return enc;
     }
